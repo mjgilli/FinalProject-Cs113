@@ -7,17 +7,25 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+
 import java.awt.BorderLayout;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.awt.Dimension;
 
 @SuppressWarnings("serial")
-public class EMailWindow extends JFrame{
+public class EMailWindow extends JFrame implements ActionListener{
 	
 	JPanel mainPanel;
+	
+	JMenuItem menuBar;
+	//TODO: add menu bar
 	
 	JPanel infoPanel;
 	
@@ -87,6 +95,7 @@ public class EMailWindow extends JFrame{
 		encrypt = new JButton("Encrypt");
 		decrypt = new JButton("Decrypt");
 		save = new JButton("Save");
+		open.addActionListener(this);
 		buttonPanel.add(open);
 		buttonPanel.add(encrypt);
 		buttonPanel.add(decrypt);
@@ -96,6 +105,20 @@ public class EMailWindow extends JFrame{
 		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
 
 		setVisible(true);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e){
+		if(e.getSource() == open){
+			
+		}
+		else if(e.getSource() == encrypt){
+			
+		}else if(e.getSource() == decrypt){
+			
+		}else if(e.getSource() == save){
+			
+		}
 	}
 	
 	public static void main(String args[]){
