@@ -51,8 +51,8 @@ public class EMailWindow extends JFrame implements ActionListener{
 	private JButton save;
 
 	private JMenuBar menuBar;
-	private JMenu fileMenu;
-	private JMenu formatMenu;
+	private JMenu fileMenuBar;
+	private JMenu viewMenuBar;
 	private JCheckBoxMenuItem wordWrapCheckbox;
 	private JMenuItem openMenu;
 	private JMenuItem encryptMenu;
@@ -61,6 +61,7 @@ public class EMailWindow extends JFrame implements ActionListener{
 	
 	public EMailWindow(){
 		// Default window setup
+		setPreferredSize(new Dimension(500, 400));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMinimumSize(new Dimension(200,270));
 		
@@ -119,24 +120,28 @@ public class EMailWindow extends JFrame implements ActionListener{
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		fileMenu = new JMenu("File");
-		menuBar.add(fileMenu);
+		fileMenuBar = new JMenu("File");
+		menuBar.add(fileMenuBar);
 		
 		openMenu = new JMenuItem("Open");
-		fileMenu.add(openMenu);
+		openMenu.addActionListener(this);
+		fileMenuBar.add(openMenu);
 		
 		encryptMenu = new JMenuItem("Encrypt");
-		fileMenu.add(encryptMenu);
+		encryptMenu.addActionListener(this);
+		fileMenuBar.add(encryptMenu);
 		
 		decryptMenu = new JMenuItem("Decrypt");
-		fileMenu.add(decryptMenu);
+		decryptMenu.addActionListener(this);
+		fileMenuBar.add(decryptMenu);
 		
 		saveMenu = new JMenuItem("Save");
-		fileMenu.add(saveMenu);
+		saveMenu.addActionListener(this);
+		fileMenuBar.add(saveMenu);
 		
-		formatMenu = new JMenu("View");
-		formatMenu.setActionCommand("Format");
-		menuBar.add(formatMenu);
+		viewMenuBar = new JMenu("View");
+		viewMenuBar.setActionCommand("Format");
+		menuBar.add(viewMenuBar);
 		
 		wordWrapCheckbox = new JCheckBoxMenuItem("Word Wrap", true);
 		wordWrapCheckbox.addItemListener(new ItemListener(){
@@ -144,21 +149,22 @@ public class EMailWindow extends JFrame implements ActionListener{
 				inputArea.setLineWrap(wordWrapCheckbox.isSelected());
 			}
 		});
-		formatMenu.add(wordWrapCheckbox);
-
+		viewMenuBar.add(wordWrapCheckbox);
+		
+		pack();
 		setVisible(true);
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e){
-		if(e.getSource() == open){
+		if(e.getSource() == open || e.getSource() == openMenu){
 			
 		}
-		else if(e.getSource() == encrypt){
+		else if(e.getSource() == encrypt || e.getSource() == encryptMenu){
 			
-		}else if(e.getSource() == decrypt){
+		}else if(e.getSource() == decrypt || e.getSource() == decryptMenu){
 			
-		}else if(e.getSource() == save){
+		}else if(e.getSource() == save || e.getSource() == saveMenu){
 			
 		}
 	}
