@@ -223,6 +223,8 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		if(saveChanged){
 			int result = JOptionPane.showConfirmDialog(this, "Do you want to save changes?", null, JOptionPane.YES_NO_CANCEL_OPTION);
 			switch(result){
+			case -1:	// Message window closed by X, treat as cancel
+				return;
 			case 0:	//yes
 				//TODO: add save method
 				saveChanged = true;
