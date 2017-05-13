@@ -16,44 +16,56 @@ import javax.swing.border.EtchedBorder;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.Dimension;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
 
 @SuppressWarnings("serial")
 public class EMailWindow extends JFrame implements ActionListener{
 	
 	JPanel mainPanel;
-	
-	JMenuItem menuBar;
+
 	//TODO: add menu bar
 	
-	JPanel infoPanel;
+	private JPanel infoPanel;
 	
-	JLabel senderLabel;
-	JLabel subjectLabel;
-	JLabel dateLabel;
+	private JLabel senderLabel;
+	private JLabel subjectLabel;
+	private JLabel dateLabel;
 	
-	JTextField senderField;
-	JTextField subjectField;
-	JTextField dateField;
+	private JTextField senderField;
+	private JTextField subjectField;
+	private JTextField dateField;
 	
-	JPanel descriptionPanel;
-	JTextArea inputArea;
-	JScrollPane inputScroll;
+	private JPanel descriptionPanel;
+	private JTextArea inputArea;
+	private JScrollPane inputScroll;
 
-	JPanel buttonPanel;
-	JButton open;
-	JButton encrypt;
-	JButton decrypt;
-	JButton save;
+	private JPanel buttonPanel;
+	private JButton open;
+	private JButton encrypt;
+	private JButton decrypt;
+	private JButton save;
+
+	private JMenuBar menuBar;
+	private JMenu fileMenu;
+	private JMenu formatMenu;
+	private JCheckBoxMenuItem wordWrapCheckbox;
+	private JMenuItem openMenu;
+	private JMenuItem encryptMenu;
+	private JMenuItem decryptMenu;
+	private JMenuItem saveMenu;
 	
 	public EMailWindow(){
 		// Default window setup
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setMinimumSize(new Dimension(200,250));
+		setMinimumSize(new Dimension(200,270));
 		
 		mainPanel = new JPanel(new BorderLayout());
-		add(mainPanel);
+		getContentPane().add(mainPanel);
 		
 		// InfoPanel setup
 		infoPanel = new JPanel(new SpringLayout());
@@ -103,6 +115,36 @@ public class EMailWindow extends JFrame implements ActionListener{
 		SpringUtilities.makeGrid(buttonPanel, 4, 1, 5, 5, 5, 5);
 		
 		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		fileMenu = new JMenu("File");
+		menuBar.add(fileMenu);
+		
+		openMenu = new JMenuItem("Open");
+		fileMenu.add(openMenu);
+		
+		encryptMenu = new JMenuItem("Encrypt");
+		fileMenu.add(encryptMenu);
+		
+		decryptMenu = new JMenuItem("Decrypt");
+		fileMenu.add(decryptMenu);
+		
+		saveMenu = new JMenuItem("Save");
+		fileMenu.add(saveMenu);
+		
+		formatMenu = new JMenu("View");
+		formatMenu.setActionCommand("Format");
+		menuBar.add(formatMenu);
+		
+		wordWrapCheckbox = new JCheckBoxMenuItem("Word Wrap", true);
+		wordWrapCheckbox.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				inputArea.setLineWrap(wordWrapCheckbox.isSelected());
+			}
+		});
+		formatMenu.add(wordWrapCheckbox);
 
 		setVisible(true);
 	}
