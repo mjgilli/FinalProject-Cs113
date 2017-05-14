@@ -29,16 +29,21 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.Dimension;
+import java.awt.EventQueue;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JCheckBoxMenuItem;
 
+/**
+ * GUI to show the window for EMail.
+ * @author Ryo Kanda <rensakou.touhou@gmail.com>
+ *
+ */
 @SuppressWarnings("serial")
 public class EMailWindow extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener{
 	
 	private JPanel mainPanel;
-
-	//TODO: add menu bar
 	
 	private JPanel infoPanel;
 	
@@ -72,6 +77,9 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	
 	private boolean saveChanged;
 	
+	/**
+	 * Create window
+	 */
 	public EMailWindow(){
 		saveChanged = false;
 		// Default window setup
@@ -211,12 +219,9 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	}
 
 	@Override
-	public void windowActivated(WindowEvent e) {
-	}
-
+	public void windowActivated(WindowEvent e) {}
 	@Override
-	public void windowClosed(WindowEvent e) {
-	}
+	public void windowClosed(WindowEvent e) {}
 
 	@Override
 	public void windowClosing(WindowEvent e) {
@@ -241,23 +246,29 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
-
+	public void windowDeactivated(WindowEvent e) {}
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
-
+	public void windowDeiconified(WindowEvent e) {}
 	@Override
-	public void windowIconified(WindowEvent e) {
-	}
-
+	public void windowIconified(WindowEvent e) {}
+	
 	@Override
 	public void windowOpened(WindowEvent e) {
 	}
 	
+	/**
+	 * GUI tester.
+	 */
 	public static void main(String args[]){
-		@SuppressWarnings("unused")
-		EMailWindow run = new EMailWindow();
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					EMailWindow frame = new EMailWindow();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 }

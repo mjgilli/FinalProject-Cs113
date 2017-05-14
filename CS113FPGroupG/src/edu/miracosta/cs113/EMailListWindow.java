@@ -26,6 +26,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import java.awt.Component;
 
+/**
+ * GUI to show the list of the EMails.
+ * @author Ryo Kanda <rensakou.touhou@gmail.com>
+ *
+ */
 @SuppressWarnings("serial")
 public class EMailListWindow extends JFrame implements ActionListener, MouseListener{
 
@@ -43,7 +48,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 
 
 	/**
-	 * Create the frame.
+	 * Create window.
 	 */
 	public EMailListWindow() {
 		setMinimumSize(new Dimension(500, 450));
@@ -73,7 +78,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		fileMenu.add(exitMenu);
 		
 		loadEMails();
-		String[] columns = {"Sender(temporal: filename)", "Date", "Subject"};
+		String[] columns = {"Sender(temporal: filename)", "Subject", "Date"};
 		tableModel = new DefaultTableModel(columns, 0){
 			public boolean isCellEditable(int row, int column){
 				return false;
@@ -88,6 +93,9 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		contentPane.add(scrollTable, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Loads EMails from folder, and update the table.
+	 */
 	private void loadEMails(){
 		eMailFiles = eMailsDirectory.list(new EMailFilter());
 		if(eMailFiles == null){
@@ -103,32 +111,10 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		}
 	}
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					EMailListWindow frame = new EMailListWindow();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		/*File tempFile = new File("EMails\\testfile.txt");
-		try{
-			tempFile.createNewFile();
-		}catch(Exception e){}*/
-	}
-
 	@Override
 	public void mouseClicked(MouseEvent e) {}
-
 	@Override
 	public void mouseEntered(MouseEvent e) {}
-
 	@Override
 	public void mouseExited(MouseEvent e) {}
 
@@ -152,6 +138,26 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 				tableModel.addRow(eMailData[i]);
 			}
 		}
+	}
+
+	/**
+	 * GUI tester.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					EMailListWindow frame = new EMailListWindow();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		/*File tempFile = new File("EMails\\testfile.txt");
+		try{
+			tempFile.createNewFile();
+		}catch(Exception e){}*/
 	}
 }
 
