@@ -158,10 +158,10 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		saveMenu.addActionListener(this);
 		fileMenuBar.add(saveMenu);
 		
-		exitMenu = new JMenuItem("Exit");
 		ExitAction ea = new ExitAction();
 		ea.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control x"));
-		fileMenuBar.add(new JMenuItem(ea));
+		exitMenu = new JMenuItem(ea);
+		fileMenuBar.add(exitMenu);
 		
 		viewMenuBar = new JMenu("View");
 		viewMenuBar.setActionCommand("Format");
