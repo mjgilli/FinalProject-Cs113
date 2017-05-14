@@ -269,4 +269,50 @@ public class Date implements Comparable<Date>
 			return 1;
 		}
 	}
+	
+	public static void mergeSort(Date[] fullAr)
+	{
+		int halfSize;
+		if(fullAr.length > 1)
+		{
+			halfSize = fullAr.length / 2;
+			int size1 = halfSize;
+			int size2 = fullAr.length - halfSize;
+			Date[] leftAr  = new Date[size1];
+			Date[] rightAr = new Date[size2];
+			
+			for(int i = 0; i < halfSize; i ++)
+			{
+				leftAr[i] = fullAr[i];
+			}
+			for(int i = 0; i < size2; i++)
+			{
+				rightAr[i] = fullAr[i + size1];
+			}
+			mergeSort(leftAr);
+			mergeSort(rightAr);
+			merge(fullAr, leftAr, rightAr);
+		}
+	}
+	
+	// Merges the given left and right arrays into the given 
+    // result array.  Second, working version.
+    // pre : result is empty; left/right are sorted
+    // post: result contains result of merging sorted lists;
+    private static void merge(Date[] result, Date[] left, Date[] right) 
+    {
+        int i1 = 0;   // index into left array
+        int i2 = 0;   // index into right array
+        
+        for (int i = 0; i < result.length; i++) {
+            if (i2 >= right.length || (i1 < left.length && left[i1].compareTo(right[i2]) < 0))
+            {
+                result[i] = left[i1];    // take from left
+                i1++;
+            } else {
+                result[i] = right[i2];   // take from right
+                i2++;
+            }
+        }
+    }
 }
