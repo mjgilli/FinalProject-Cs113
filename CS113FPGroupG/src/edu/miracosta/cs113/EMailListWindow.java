@@ -221,6 +221,8 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	public void mousePressed(MouseEvent e) {
 		if(e.getClickCount() == 2){
 			// open EMail with new window
+			EMail selected = eMailList[eMailTable.getSelectedRow()];
+			EMailWindow open = new EMailWindow(selected);
 			System.out.println("Doubleclicked");
 		}
 	}

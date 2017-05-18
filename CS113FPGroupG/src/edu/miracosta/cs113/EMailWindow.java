@@ -183,6 +183,14 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		setVisible(true);
 	}
 	
+	public EMailWindow(EMail openEMail){
+		EMailWindow windowWithParams = new EMailWindow();
+		windowWithParams.senderField.setText(openEMail.getSender());
+		windowWithParams.subjectField.setText(openEMail.getSubject());
+		windowWithParams.dateField.setText(openEMail.getDate().toString());
+		windowWithParams.inputArea.setText(openEMail.getMsg());
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == open || e.getSource() == openMenu){
