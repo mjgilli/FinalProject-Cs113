@@ -3,11 +3,17 @@ package edu.miracosta.cs113;
 public class EMail implements Comparable<EMail>{
 	protected String sender;
 	protected String subject;
-	//TODO: consider Calendar
 	protected Date date;
 	protected String msg;
 	protected String saveFileName;
 	
+	
+	/**
+	 * Default Constructor for EMail class
+	 * Sets all instance variables to default values
+	 * PRECONDITION:  N/A
+	 * POSTCONDITION: Creates instance of EMail class
+	 */
 	public EMail(){
 		this.sender = "";
 		this.subject = "";
@@ -16,6 +22,16 @@ public class EMail implements Comparable<EMail>{
 		this.saveFileName = "encrypted"+subject+".txt";
 	}
 	
+	/**
+	 * Full Constructor for EMail class
+	 * sets all instance variable to given values
+	 * PRECONDITION: All arguments passed through must have valid values
+	 * POSTCONDITION: Creates instance of EMail class with given values
+	 * @param sender String representing name of sender
+	 * @param subject String representing subject on EMail
+	 * @param date Date Object representing date EMail was sent
+	 * @param msg String representing contents of EMail
+	 */
 	public EMail(String sender, String subject, Date date, String msg)
 	{
 		this.sender= sender;
@@ -25,22 +41,49 @@ public class EMail implements Comparable<EMail>{
 		saveFileName = "encrypted" + this.subject + ".txt";
 	}
 	
+	/**
+	 * Sets the sender of EMail to given value 
+	 * PRECONDITION:  Variable sender has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+	 * @param sender String representation of sender
+	 */
 	public void setSender(String sender){
 		this.sender = sender;
 	}
 	
+	/**
+	 * Gets the sender of EMail
+	 * PRECONDITION: All instance variables(sender) have valid values
+	 * @return String representing sender of EMail
+	 */
 	public String getSender(){
 		return sender;
 	}
 	
+	/**
+	 * Sets the subject of EMail to given value
+	 * PRECONDITION:  Variable subject has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+	 * @param subject String representation of subject
+	 */
 	public void setSubject(String subject){
 		this.subject = subject;
 	}
 	
+	/**
+	 * Gets the subject of EMail
+	 * PRECONDITION: All instance variables(subject) have valid values
+	 * @return String representing subject of EMail
+	 */
 	public String getSubject(){
 		return subject;
 	}
 	
+	/**
+	 * Sets the date of EMail to given value
+	 * PRECONDITION: All instance variables(date) have valid values
+	 * @param date Date Object representing when EMail was sent
+	 */
 	public void setDate(Date date){
 		this.date = date;
 	}
