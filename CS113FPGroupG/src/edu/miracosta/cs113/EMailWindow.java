@@ -86,6 +86,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		setPreferredSize(new Dimension(500, 400));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(this);
+		setBounds(100, 100, 450, 300);
 		setMinimumSize(new Dimension(200,270));
 		
 		mainPanel = new JPanel(new BorderLayout());
@@ -183,12 +184,17 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		setVisible(true);
 	}
 	
+	/**
+	 * Creates window with given EMail object.
+	 * @param openEMail
+	 */
 	public EMailWindow(EMail openEMail){
 		EMailWindow windowWithParams = new EMailWindow();
 		windowWithParams.senderField.setText(openEMail.getSender());
 		windowWithParams.subjectField.setText(openEMail.getSubject());
 		windowWithParams.dateField.setText(openEMail.getDate().toString());
 		windowWithParams.inputArea.setText(openEMail.getMsg());
+		saveChanged = false;
 	}
 	
 	@Override
@@ -197,10 +203,16 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 			
 		}
 		else if(e.getSource() == encrypt || e.getSource() == encryptMenu){
-			
-		}else if(e.getSource() == decrypt || e.getSource() == decryptMenu){
-			
-		}else if(e.getSource() == save || e.getSource() == saveMenu){
+			//String rawText = inputArea.getText();
+			//String encrypted = callEncryptMethod
+			//inputArea.setText(encrypted);
+		}
+		else if(e.getSource() == decrypt || e.getSource() == decryptMenu){
+			//String encrypted = inputArea.getText();
+			//String decrypted = callEncryptMethod
+			//inputArea.setText(decrypted);
+		}
+		else if(e.getSource() == save || e.getSource() == saveMenu){
 			
 			saveChanged = false;
 		}
