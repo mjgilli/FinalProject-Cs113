@@ -2,7 +2,6 @@ package edu.miracosta.cs113;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,11 +34,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JMenu;
-import java.awt.Component;
 
 /**
  * GUI to show the list of the EMails.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
+ * @version 0.6
  *
  */
 @SuppressWarnings("serial")
@@ -198,6 +197,9 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		}
 	}
 	
+	/**
+	 * Sort list as default sort when window created.
+	 */
 	private void setInitialSort(){
 		tableModel.setRowCount(0);
 		EMail.mergeSort(eMailList, 'D');
@@ -222,6 +224,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		if(e.getClickCount() == 2){
 			// open EMail with new window
 			EMail selected = eMailList[eMailTable.getSelectedRow()];
+			@SuppressWarnings("unused")
 			EMailWindow open = new EMailWindow(selected);
 			System.out.println("Doubleclicked");
 		}
@@ -234,6 +237,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == reloadMenu){
 			loadEMails();
+			setInitialSort();
 		}
 
 		else if(e.getSource() == senderSort || e.getSource() == senderSortR){
