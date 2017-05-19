@@ -38,9 +38,10 @@ import javax.swing.JCheckBoxMenuItem;
 /**
  * GUI to show the window for EMail.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
+ * @version 0.91
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unused" })
 public class EMailWindow extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener{
 	
 	private JPanel mainPanel;
@@ -60,22 +61,22 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private JScrollPane inputScroll;
 
 	private JPanel buttonPanel;
-	private JButton open;
 	private JButton encrypt;
 	private JButton decrypt;
+	private JButton open;
 	private JButton save;
 
 	private JMenuBar menuBar;
 	private JMenu fileMenuBar;
 	private JMenu viewMenuBar;
 	private JCheckBoxMenuItem wordWrapCheckbox;
-	private JMenuItem openMenu;
 	private JMenuItem encryptMenu;
 	private JMenuItem decryptMenu;
+	private JMenuItem openMenu;
 	private JMenuItem saveMenu;
 	private JMenuItem exitMenu;
 	
-	private boolean saveChanged;
+	private boolean saveChanged;	// used to ask for save changes made, but disabled (save not implemented)
 	
 	/**
 	 * Create window
@@ -86,7 +87,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		setPreferredSize(new Dimension(500, 400));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(this);
-		setBounds(100, 100, 450, 300);
+		setBounds(150, 150, 450, 300);
 		setMinimumSize(new Dimension(200,270));
 		
 		mainPanel = new JPanel(new BorderLayout());
@@ -98,6 +99,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		infoPanel.add(senderLabel, BorderLayout.WEST);
 
 		senderField = new JTextField();
+		senderField.setEditable(false);
 		senderField.getDocument().addDocumentListener(this);
 		infoPanel.add(senderField, BorderLayout.CENTER);
 		
@@ -105,6 +107,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		infoPanel.add(subjectLabel, BorderLayout.WEST);
 
 		subjectField = new JTextField();
+		subjectField.setEditable(false);
 		subjectField.getDocument().addDocumentListener(this);
 		infoPanel.add(subjectField, BorderLayout.CENTER);
 		
@@ -112,6 +115,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		infoPanel.add(dateLabel, BorderLayout.WEST);
 		
 		dateField = new JTextField();
+		dateField.setEditable(false);
 		dateField.getDocument().addDocumentListener(this);
 		infoPanel.add(dateField, BorderLayout.CENTER);
 
@@ -122,6 +126,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		// DescriptionPanel setup
 		descriptionPanel = new JPanel(new BorderLayout());
 		inputArea = new JTextArea();
+		inputArea.setEditable(false);
 		inputScroll = new JScrollPane(inputArea);
 		inputArea.setLineWrap(true);
 		EtchedBorder border = new EtchedBorder(EtchedBorder.RAISED);
@@ -132,28 +137,26 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		
 		// ButtonPanel setup
 		buttonPanel = new JPanel(new SpringLayout());
-		open = new JButton("Open");
 		encrypt = new JButton("Encrypt");
 		decrypt = new JButton("Decrypt");
+		open = new JButton("Open");
+		open.setVisible(false);		// disabled
 		save = new JButton("Save");
+		save.setVisible(false);		// disabled
 		open.addActionListener(this);
-		buttonPanel.add(open);
 		buttonPanel.add(encrypt);
 		buttonPanel.add(decrypt);
+		buttonPanel.add(open);
 		buttonPanel.add(save);
 		SpringUtilities.makeGrid(buttonPanel, 4, 1, 5, 5, 5, 5);
-		
 		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
 		
+		// MenuBar setup
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
 		fileMenuBar = new JMenu("File");
 		menuBar.add(fileMenuBar);
-		
-		openMenu = new JMenuItem("Open");
-		openMenu.addActionListener(this);
-		fileMenuBar.add(openMenu);
 		
 		encryptMenu = new JMenuItem("Encrypt");
 		encryptMenu.addActionListener(this);
@@ -163,7 +166,13 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		decryptMenu.addActionListener(this);
 		fileMenuBar.add(decryptMenu);
 		
+		openMenu = new JMenuItem("Open");
+		openMenu.setVisible(false);		// disabled
+		openMenu.addActionListener(this);
+		fileMenuBar.add(openMenu);
+		
 		saveMenu = new JMenuItem("Save");
+		saveMenu.setVisible(false);		// disabled
 		saveMenu.addActionListener(this);
 		fileMenuBar.add(saveMenu);
 		
@@ -199,8 +208,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	
 	@Override
 	public void actionPerformed(ActionEvent e){
-		if(e.getSource() == open || e.getSource() == openMenu){
-			
+		if(e.getSource() == open || e.getSource() == openMenu){	// open button no need?
 		}
 		else if(e.getSource() == encrypt || e.getSource() == encryptMenu){
 			//String rawText = inputArea.getText();
@@ -212,8 +220,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 			//String decrypted = callEncryptMethod
 			//inputArea.setText(decrypted);
 		}
-		else if(e.getSource() == save || e.getSource() == saveMenu){
-			
+		else if(e.getSource() == save || e.getSource() == saveMenu){	// save button no need?
 			saveChanged = false;
 		}
 	}
@@ -245,13 +252,13 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 
 	@Override
 	public void windowClosing(WindowEvent e) {
+		/* implemented, but will not be used
 		if(saveChanged){
 			int result = JOptionPane.showConfirmDialog(this, "Do you want to save changes?", null, JOptionPane.YES_NO_CANCEL_OPTION);
 			switch(result){
 			case -1:	// Message window closed by X, treat as cancel
 				return;
 			case 0:	//yes
-				//TODO: add save method
 				saveChanged = true;
 				break;
 			case 1:	//no
@@ -261,6 +268,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 				return;
 			}
 		}
+		*/
 		super.dispose();
 		
 	}
@@ -271,7 +279,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	public void windowDeiconified(WindowEvent e) {}
 	@Override
 	public void windowIconified(WindowEvent e) {}
-	
 	@Override
 	public void windowOpened(WindowEvent e) {
 	}

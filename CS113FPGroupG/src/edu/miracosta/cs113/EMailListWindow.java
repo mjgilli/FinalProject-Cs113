@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -38,12 +37,16 @@ import javax.swing.JMenu;
 /**
  * GUI to show the list of the EMails.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.6
+ * @version 0.98
  *
  */
 @SuppressWarnings("serial")
 public class EMailListWindow extends JFrame implements ActionListener, MouseListener{
 
+	private JMenuItem reloadMenu;
+	private JMenuItem exitMenu;
+	private JMenuItem resetSortMenu;
+	
 	private JPanel sortPanel;
 	private JPanel sortButtonPanel;
 	private JLabel sortLabel;
@@ -65,10 +68,6 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	private EMail eMailList[];
 	
 	private static final File eMailsDirectory = new File(".\\EMails");
-	private JMenuItem reloadMenu;
-	private JMenuItem exitMenu;
-	private JMenuItem resetSortMenu;
-
 
 	/**
 	 * Create window.
@@ -98,8 +97,9 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		
 		resetSortMenu = new JMenuItem("Reset sort");
 		resetSortMenu.addActionListener(this);
-		fileMenu.add(resetSortMenu);
 		fileMenu.add(exitMenu);
+
+		viewMenu.add(resetSortMenu);
 		
 		sortPanel = new JPanel();
 		sortLabel = new JLabel("Sort by:");
@@ -139,7 +139,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		listPanel.setLayout(new BorderLayout(0, 0));
 		getContentPane().add(listPanel,BorderLayout.CENTER);
 		
-		String[] columns = {"Sender(temporal: filename)", "Subject", "Date"};
+		String[] columns = {"Sender", "Subject", "Date"};
 		tableModel = new DefaultTableModel(columns, 0){
 			public boolean isCellEditable(int row, int column){
 				return false;
@@ -156,53 +156,89 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	/**
 	 * Loads EMails from folder, and update the table.
 	 */
+	@SuppressWarnings("unused")
 	private void loadEMails(){
-		tableModel.setRowCount(0);
+		// get all .txt files
 		eMailFiles = eMailsDirectory.list(new EMailFilter());
 		if(eMailFiles == null){
 			try{
 				new File("EMails\\temporary.txt").createNewFile();
+				JOptionPane.showMessageDialog(this, "No files found in "+eMailsDirectory.getAbsolutePath());
 			}catch(Exception e){}
 		}
+		
 		eMailData = new String[eMailFiles.length][3];
 		eMailList = new EMail[eMailFiles.length];
+		
 		for(int i=0; i<eMailFiles.length; i++){
 			// try .txt -> EMail[] eMailList
 			File file = new File(eMailsDirectory+"\\"+eMailFiles[i]);
-			BufferedReader read;
+			BufferedReader read = null;
+			String sender = "";
+			String subject = "";
+			String rawDateString = "";
+			String[] dateString = null;
+			StringBuilder message;
 			try{
 				read = new BufferedReader(new FileReader(file));
-				String sender = read.readLine();
-				String subject = read.readLine();
-				String[] dateString = read.readLine().split(" ");
+				sender = read.readLine();
+				subject = read.readLine();
+				rawDateString = read.readLine();
+				dateString = rawDateString.split(" ");
 				Date date = new Date(dateString[0], Integer.parseInt(dateString[1].substring(0, dateString[1].length()-1)), Integer.parseInt(dateString[2]));
-				String message = read.readLine();
-				eMailList[i] = new EMail(sender, subject, date, message);
-				//System.out.println("Added:"+sender+" "+subject+" "+date+" "+message);
+				message = new StringBuilder("");
+				String nextLine = read.readLine();
+				while(nextLine != null){
+					message.append(nextLine);
+					nextLine = read.readLine();
+					if(nextLine != null){
+						message.append("\n");
+					}
+				}
+				if(message == null && message.toString().equals("")){
+					eMailList[i] = new EMail(sender, subject, date, "");
+				}
+				else{
+					eMailList[i] = new EMail(sender, subject, date, message.toString());
+				}
 				read.close();
-			}catch(IOException e){
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "file: "+file.getAbsolutePath()+" corrupted!");
-				return;
+			}catch(Exception e){
+				JOptionPane.showMessageDialog(this, "file: "+file.getAbsolutePath()+" corrupted!\nShowing as [CORRUPTED] file.");
+				StringBuilder corrupted = new StringBuilder("");
+				corrupted.append(sender+"\n"+subject+"\n"+rawDateString);
+				String nextLine = "";
+				try{
+					nextLine = read.readLine();
+					while(nextLine != null){
+						corrupted.append(nextLine);
+						nextLine = read.readLine();
+						if(nextLine != null){
+							corrupted.append("\n");
+						}
+					}
+				}catch(Exception ee){
+				}
+				eMailList[i] = new EMail("[CORRUPTED]("+eMailFiles[i]+")", "[CORRUPTED]", new Date(1, 1, 9999), corrupted.toString());
+				try{read.close();}catch(Exception ex){}
 			}
-			
-			// EMail[] eMailList -> String[][] eMailData	for showing as JTable
-			eMailData[i][0] = eMailList[i].getSender();
-			eMailData[i][1] = eMailList[i].getSubject();
-			eMailData[i][2] = eMailList[i].getDate().toString();
 		}
-		
-		for(int i=0; i<eMailFiles.length; i++){
-			tableModel.addRow(eMailData[i]);
-		}
+		updateList();
 	}
 	
 	/**
 	 * Sort list as default sort when window created.
 	 */
 	private void setInitialSort(){
-		tableModel.setRowCount(0);
 		EMail.mergeSort(eMailList, 'D');
+		updateList();
+	}
+	
+	/**
+	 * Updates the JTable
+	 */
+	private void updateList(){
+		// EMail[] eMailList -> String[][] eMailData	for showing as JTable
+		tableModel.setRowCount(0);
 		for(int i=0; i<eMailList.length; i++){
 			eMailData[i][0] = eMailList[i].getSender();
 			eMailData[i][1] = eMailList[i].getSubject();
@@ -222,11 +258,9 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(e.getClickCount() == 2){
-			// open EMail with new window
 			EMail selected = eMailList[eMailTable.getSelectedRow()];
 			@SuppressWarnings("unused")
 			EMailWindow open = new EMailWindow(selected);
-			System.out.println("Doubleclicked");
 		}
 	}
 
@@ -241,61 +275,34 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		}
 
 		else if(e.getSource() == senderSort || e.getSource() == senderSortR){
-			tableModel.setRowCount(0);
 			EMail.mergeSort(eMailList, 'A');
 			if(e.getSource() == senderSortR){
 				Collections.reverse(Arrays.asList(eMailList));
 			}
-			for(int i=0; i<eMailList.length; i++){
-				eMailData[i][0] = eMailList[i].getSender();
-				eMailData[i][1] = eMailList[i].getSubject();
-				eMailData[i][2] = eMailList[i].getDate().toString();
-				
-				tableModel.addRow(eMailData[i]);
-			}
+			updateList();
 		}
 		
 		else if(e.getSource() == subjectSort || e.getSource() == subjectSortR){
-			tableModel.setRowCount(0);
 			EMail.mergeSort(eMailList,  'B');
 			if(e.getSource() == subjectSortR){
 				Collections.reverse(Arrays.asList(eMailList));
 			}
-			for(int i=0; i<eMailList.length; i++){
-				eMailData[i][0] = eMailList[i].getSender();
-				eMailData[i][1] = eMailList[i].getSubject();
-				eMailData[i][2] = eMailList[i].getDate().toString();
-				
-				tableModel.addRow(eMailData[i]);
-			}
+			updateList();
 		}
 		
 		else if(e.getSource() == dateSort || e.getSource() == dateSortR){
-			tableModel.setRowCount(0);
 			EMail.mergeSort(eMailList, 'C');
 			if(e.getSource() == dateSortR){
 				Collections.reverse(Arrays.asList(eMailList));
 			}
-			for(int i=0; i<eMailList.length; i++){
-				eMailData[i][0] = eMailList[i].getSender();
-				eMailData[i][1] = eMailList[i].getSubject();
-				eMailData[i][2] = eMailList[i].getDate().toString();
-				
-				tableModel.addRow(eMailData[i]);
-			}
+			updateList();
 		}
 		
 		else if(e.getSource() == resetSortMenu){
 			dateSort.setSelected(true);
 			tableModel.setRowCount(0);
 			EMail.mergeSort(eMailList, 'D');
-			for(int i=0; i<eMailList.length; i++){
-				eMailData[i][0] = eMailList[i].getSender();
-				eMailData[i][1] = eMailList[i].getSubject();
-				eMailData[i][2] = eMailList[i].getDate().toString();
-				
-				tableModel.addRow(eMailData[i]);
-			}
+			updateList();
 		}
 	}
 
