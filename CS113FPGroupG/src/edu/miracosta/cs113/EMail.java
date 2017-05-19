@@ -81,21 +81,38 @@ public class EMail implements Comparable<EMail>{
 	
 	/**
 	 * Sets the date of EMail to given value
-	 * PRECONDITION: All instance variables(date) have valid values
+	 * PRECONDITION:  Variable date has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
 	 * @param date Date Object representing when EMail was sent
 	 */
 	public void setDate(Date date){
 		this.date = date;
 	}
 	
+	/**
+	 * Gets the date of EMail
+	 * PRECONDITION: All instance variables(date) have valid values
+	 * @return Date representation of date email sent
+	 */
 	public Date getDate(){
 		return date;
 	}
 	
+	/**
+	 * Sets the contents of what was written in EMail
+	 * PRECONDITION:  Variable msg has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+	 * @param msg String representing what email says
+	 */
 	public void setMsg(String msg){
 		this.msg = msg;
 	}
 	
+	/**
+	 * Gets the msg of EMail
+	 * PRECONDITION: All instance variables(msg) have valid values
+	 * @return String representation of what email says
+	 */
 	public String getMsg(){
 		return msg;
 	}
@@ -104,17 +121,34 @@ public class EMail implements Comparable<EMail>{
 		this.saveFileName = saveFileName;
 	}
 	
+	/**
+	 * Gets the fileName of how EMail will be saved
+	 * PRECONDITION: All instance variables(saveFileName) have valid values
+	 * @return String representing what EMail is saved under
+	 */
 	public String getSaveFileName(){
 		return saveFileName;
 	}
-	
+	// DESCRIPTION:   converts object to String representation
+		// PRECONDITION:  all instance variables have valid values
+		// POSTCONDITION: returns String containing all instance variables
+	/**
+	 * Converts object to String representation
+	 * PRECONDITON:  All instance variables have valid values
+	 * POSTCONDITON: Returns String containing all instance variables
+	 */
 	public String toString()
 	{
 		return "From: " + this.sender + "\t on " + this.date.toString() + "\n Subject:" + this.subject
 				+ "\n Message:" + this.msg;
 	}
 
-	// default sorting
+	/**
+	 * Compares two EMails by date > sender's name > subject
+	 * PRECODNDITON: EMails instance variables have valid values
+	 * @param EMail object other to be compared to
+	 * @return int value < 0 if this comes before other, > 0 if this comes after other, = 0 if both EMails are equal
+	 */
 	public int compareTo(EMail other) {
 		int n;
 		n = this.date.compareTo(other.date);
@@ -130,21 +164,44 @@ public class EMail implements Comparable<EMail>{
 		return this.subject.compareTo(other.subject);
 	}
 	
+	/**
+	 * Compares two EMails by date
+	 * PRECODNDITON: EMails instance variables have valid values
+	 * @param EMail object other to be compared to
+	 * @return int value < 0 if this comes before other, > 0 if this comes after other, = 0 if both EMails are equal
+	 */
 	public int compareToDate(EMail other)
 	{
 		return this.date.compareTo(other.date);
 	}
 	
+	/**
+	 * Compares two EMails by sender's name
+	 * PRECODNDITON: EMails instance variables have valid values
+	 * @param EMail object other to be compared to
+	 * @return int value < 0 if this comes before other, > 0 if this comes after other, = 0 if both EMails are equal
+	 */
 	public int compareToSender(EMail other)
 	{
 		return this.sender.compareTo(other.sender);
 	}
 	
+	/**
+	 * Compares two EMails by subject
+	 * PRECODNDITON: EMails instance variables have valid values
+	 * @param EMail object other to be compared to
+	 * @return int value < 0 if this comes before other, > 0 if this comes after other, = 0 if both EMails are equal
+	 */
 	public int compareToSubject(EMail other)
 	{
 		return this.subject.compareTo(other.subject);
 	}
 	
+	/**
+	 * Sorts EMail array inside of fullAr
+	 * @param fullAr EMail array to be sorted
+	 * @param choice char to pick how to sort
+	 */
 	public static void mergeSort(EMail[] fullAr, char choice)
 	{
 		int halfSize;
@@ -170,10 +227,15 @@ public class EMail implements Comparable<EMail>{
 		}
 	}
 	
-	// Merges the given left and right arrays into the given 
-    // result array.  Second, working version.
-    // pre : result is empty; left/right are sorted
-    // post: result contains result of merging sorted lists;
+	/**
+	 * Merges the given left and right arrays into the given result array.
+	 * PRECONDITION:  Result is empty; left/right are sorted
+	 * POSTCONDITION: Result contains result of merging sorted lists;
+	 * @param result  EMail array containing array to be merged
+	 * @param left    Left half of EMail array
+	 * @param right	  Right half of EMail array
+	 * @param choice  char representing what type of sort
+	 */
     private static void merge(EMail[] result, EMail[] left, EMail[] right, char choice) 
     {
         int i1 = 0;   // index into left array

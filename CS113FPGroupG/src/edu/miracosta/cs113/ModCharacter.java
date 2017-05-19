@@ -1,3 +1,4 @@
+package edu.miracosta.cs113;
 /**
  * This class is used as the representation
  * of a char object with added instance variables

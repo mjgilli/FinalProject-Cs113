@@ -18,6 +18,7 @@ import javax.swing.AbstractAction;
  *  
  *  @see https://tips4java.wordpress.com/2009/05/01/closing-an-application/
  */
+@SuppressWarnings("serial")
 public class ExitAction extends AbstractAction
 {
 	public ExitAction()
