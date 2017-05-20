@@ -34,7 +34,7 @@ public class Date implements Comparable<Date>
 
     /**
      * Full Constructor for Date Class
-     * @param monthInt int representing month
+     * @param monthInt String representing month
      * @param day int representing day
      * @param year int representing year
      */
@@ -43,11 +43,19 @@ public class Date implements Comparable<Date>
         setDate(monthString, day, year);
     }
 
+    /**
+     * Full Constructor for Date Class starting on new year
+     * @param year int representing year
+     */
     public Date(int year)
     {
         setDate(1, 1, year);
     }
 
+    /**
+     * Copy Constructor for Date Class starting on given Date
+     * @param aDate Date object to create Date from
+     */
     public Date(Date aDate)
     {
         if (aDate == null)//Not a real date.
@@ -60,6 +68,14 @@ public class Date implements Comparable<Date>
         year = aDate.year;
     }
 
+    /**
+     * Sets the date of Date to given values
+	 * PRECONDITION:  Variable monthInt, day, year has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param monthInt int representation of month
+     * @param day int representation of day
+     * @param year int representation of year
+     */
     public void setDate(int monthInt, int day, int year)
     {
         if (dateOK(monthInt, day, year))
@@ -75,6 +91,14 @@ public class Date implements Comparable<Date>
         }
     }
 
+    /**
+     * Sets the date of Date to given values
+	 * PRECONDITION:  Variable monthInt, day, year has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param monthInt String representation of month
+     * @param day int representation of day
+     * @param year int representation of year
+     */
     public void setDate(String monthString, int day, int year)
     {
         if (dateOK(monthString, day, year))
@@ -90,11 +114,23 @@ public class Date implements Comparable<Date>
         }
     }
 
+    /**
+     * Sets the date of Date to given values on new year
+	 * PRECONDITION:  Variable year has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param year int representation of year
+     */
     public void setDate(int year)
     {
         setDate(1, 1, year);
     }
 
+    /**
+     * Sets the year of Date to given values
+	 * PRECONDITION:  Variable year has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param year int representation of year
+     */
     public void setYear(int year)
     {
         if ( (year < 1000) || (year > 9999) )
@@ -106,6 +142,12 @@ public class Date implements Comparable<Date>
             this.year = year;
     }
 
+    /**
+     * Sets the month of Date to given values
+	 * PRECONDITION:  Variable month has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param month int representation of month
+     */
     public void setMonth(int monthNumber)
     {
         if ((monthNumber <= 0) || (monthNumber > 12))
@@ -117,6 +159,12 @@ public class Date implements Comparable<Date>
             month = monthString(monthNumber);
     }
 
+    /**
+     * Sets the day of Date to given values
+	 * PRECONDITION:  Variable day has valid value
+	 * POSTCONDITION: Sets instance variable to parameter value
+     * @param month int representation of day
+     */
     public void setDay(int day)
     {
         if ((day <= 0) || (day > 31))
@@ -128,6 +176,11 @@ public class Date implements Comparable<Date>
             this.day = day;
     }
 
+    /**
+	 * Gets the month of the Date
+	 * PRECONDITION: All instance variables(month) have valid values
+	 * @return int representation of month
+	 */
     public int getMonth( )
     {
         if (month.equals("January"))
@@ -162,27 +215,67 @@ public class Date implements Comparable<Date>
         }
     }
 
+    /**
+   	 * Gets the day of the Date
+   	 * PRECONDITION: All instance variables(day) have valid values
+   	 * @return int representation of day
+   	 */
     public int getDay( )
     {
         return day;
     }
 
+    /**
+   	 * Gets the year of the Date
+   	 * PRECONDITION: All instance variables(year) have valid values
+   	 * @return int representation of year
+   	 */
     public int getYear( )
     {
         return year;
     }
 
+    /**
+	 * Converts object to String representation
+	 * PRECONDITON:  All instance variables have valid values
+	 * POSTCONDITON: Returns String containing all instance variables
+	 */
     public String toString( )
     {
         return (month + " " + day + ", " + year);
     }
 
-    public boolean equals(Date otherDate)
+    /**
+     * Returns boolean is "this" Date is equal to parameter
+	 * PRECONDITION:	Instance variables have valid values for both Date objects
+     * POSTCONDITION:	Returns true if both are exactly the same, false otherwise.
+     * @param other Date object to compare
+     * @return boolean representing if equal
+     */
+    public boolean equals(Date other)
     {
-        return ( (month.equals(otherDate.month))
-                  && (day == otherDate.day) && (year == otherDate.year) );
+    	Date otherDate;
+
+		if(other == null || this.getClass() != other.getClass())
+		{
+			return false;
+		}
+		else
+		{
+			otherDate = (Date) other;
+			
+			return ( (month.equals(otherDate.month))
+	                  && (day == otherDate.day) && (year == otherDate.year) );
+		}
     }
 
+    /**
+     * Returns boolean is "this" Date precedes to parameter
+	 * PRECONDITION:	Instance variables have valid values for both Date objects
+     * POSTCONDITION:	Returns true if this precedes otherDate, false otherwise.
+     * @param other Date object to compare
+     * @return boolean representing if precedes
+     */
     public boolean precedes(Date otherDate)
     {
         return ( (year < otherDate.year) ||
@@ -191,6 +284,11 @@ public class Date implements Comparable<Date>
                                          && day < otherDate.day) );
     }
 
+    /**
+     * Reads input from user to set Date variables
+	 * PRECONDITION:	N/A
+     * POSTCONDITION:	Date object has now set values
+     */
     public void readInput( )
     {
         boolean tryAgain = true;
@@ -213,6 +311,13 @@ public class Date implements Comparable<Date>
         keyboard.close();
     }
 
+    /**
+     * checks if date is valid
+     * @param monthInt int representation of month
+     * @param dayInt int representation of day
+     * @param yearInt int representation of year
+     * @return true if valid, false otherwise
+     */
     private boolean dateOK(int monthInt, int dayInt, int yearInt)
     {
         return ( (monthInt >= 1) && (monthInt <= 12) &&
@@ -220,6 +325,13 @@ public class Date implements Comparable<Date>
                  (yearInt >= 1000) && (yearInt <= 9999) );
     }
 
+    /**
+     * checks if date is valid
+     * @param monthString string representation of month
+     * @param dayInt int representation of day
+     * @param yearInt int representation of year
+     * @return true if valid, false otherwise
+     */
     private boolean dateOK(String monthString, int dayInt, int yearInt)
     {
         return ( monthOK(monthString) &&
@@ -227,6 +339,11 @@ public class Date implements Comparable<Date>
                  (yearInt >= 1000) && (yearInt <= 9999) );
     }
 
+    /**
+     * Checks if month is valid
+     * @param month string representation
+     * @return true if valid, false otherwise
+     */
     private boolean monthOK(String month)
     {
         return (month.equals("January") || month.equals("February") ||
@@ -237,6 +354,11 @@ public class Date implements Comparable<Date>
                 month.equals("November") || month.equals("December") );
     }
 
+    /**
+     * changes int representation of month to String
+     * @param monthNumber int representing month
+     * @return string representation of month
+     */
     private String monthString(int monthNumber)
     {
         switch (monthNumber)
@@ -272,6 +394,12 @@ public class Date implements Comparable<Date>
         }
     }
 
+    /**
+	 * Compares two Dates if precedes, equal, or after
+	 * PRECODNDITON: Date instance variables have valid values
+	 * @param Date object other to be compared to
+	 * @return int value < 0 if this comes before other, > 0 if this comes after other, = 0 if both EMails are equal
+	 */
 	public int compareTo(Date obj) 
 	{
 		if(this.precedes(obj))
@@ -288,6 +416,10 @@ public class Date implements Comparable<Date>
 		}
 	}
 	
+	/**
+	 * Sorts Date array inside of fullAr
+	 * @param fullAr Date array to be sorted
+	 */
 	public static void mergeSort(Date[] fullAr)
 	{
 		int halfSize;
@@ -313,10 +445,14 @@ public class Date implements Comparable<Date>
 		}
 	}
 	
-	// Merges the given left and right arrays into the given 
-    // result array.  Second, working version.
-    // pre : result is empty; left/right are sorted
-    // post: result contains result of merging sorted lists;
+	/**
+	 * Merges the given left and right arrays into the given result array.
+	 * PRECONDITION:  Result is empty; left/right are sorted
+	 * POSTCONDITION: Result contains result of merging sorted lists;
+	 * @param result  Date array containing array to be merged
+	 * @param left    Left half of Date array
+	 * @param right	  Right half of Date array
+	 */
     private static void merge(Date[] result, Date[] left, Date[] right) 
     {
         int i1 = 0;   // index into left array

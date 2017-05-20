@@ -5,7 +5,6 @@ public class EMail implements Comparable<EMail>{
 	protected String subject;
 	protected Date date;
 	protected String msg;
-	protected String saveFileName;
 	
 	
 	/**
@@ -19,7 +18,6 @@ public class EMail implements Comparable<EMail>{
 		this.subject = "";
 		this.date = null;
 		this.msg = "";
-		this.saveFileName = "encrypted"+subject+".txt";
 	}
 	
 	/**
@@ -38,7 +36,6 @@ public class EMail implements Comparable<EMail>{
 		this.subject = subject;
 		this.date = date;
 		this.msg = msg;
-		saveFileName = "encrypted" + this.subject + ".txt";
 	}
 	
 	/**
@@ -117,21 +114,6 @@ public class EMail implements Comparable<EMail>{
 		return msg;
 	}
 	
-	public void setSaveFileName(String saveFileName){
-		this.saveFileName = saveFileName;
-	}
-	
-	/**
-	 * Gets the fileName of how EMail will be saved
-	 * PRECONDITION: All instance variables(saveFileName) have valid values
-	 * @return String representing what EMail is saved under
-	 */
-	public String getSaveFileName(){
-		return saveFileName;
-	}
-	// DESCRIPTION:   converts object to String representation
-		// PRECONDITION:  all instance variables have valid values
-		// POSTCONDITION: returns String containing all instance variables
 	/**
 	 * Converts object to String representation
 	 * PRECONDITON:  All instance variables have valid values
@@ -142,6 +124,30 @@ public class EMail implements Comparable<EMail>{
 		return "From: " + this.sender + "\t on " + this.date.toString() + "\n Subject:" + this.subject
 				+ "\n Message:" + this.msg;
 	}
+	
+	/**
+     * Returns boolean is "this" EMail is equal to parameter
+	 * PRECONDITION:	Instance variables have valid values for both Date objects
+     * POSTCONDITION:	Returns true if both are exactly the same, false otherwise.
+     * @param other EMail object to compare
+     * @return boolean representing if equal
+     */
+    public boolean equals(EMail other)
+    {
+    	EMail otherEMail;
+
+		if(other == null || this.getClass() != other.getClass())
+		{
+			return false;
+		}
+		else
+		{
+			otherEMail = (EMail) other;
+			
+			return ( (sender.equals(otherEMail.sender))
+	                  && (subject.equals(otherEMail.subject)  && (date.equals(otherEMail.date))));
+		}
+    }
 
 	/**
 	 * Compares two EMails by date > sender's name > subject
