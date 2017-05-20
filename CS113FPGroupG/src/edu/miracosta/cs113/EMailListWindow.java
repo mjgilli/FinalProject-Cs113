@@ -40,7 +40,7 @@ import javax.swing.JMenu;
 /**
  * GUI to show the list of the EMails.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.99
+ * @version 1.0
  *
  */
 @SuppressWarnings("serial")
@@ -92,7 +92,6 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
-		
 		JMenu viewMenu = new JMenu("View");
 		menuBar.add(viewMenu);
 
@@ -176,16 +175,15 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	 */
 	@SuppressWarnings("unused")
 	private void loadEMails(){
-		// get all .txt files
-		eMailFiles = eMailsDirectory.list(new EMailFilter());
+		eMailFiles = eMailsDirectory.list(new EMailFilter());	// get all .txt files
 		if(eMailFiles == null){
 			try{
 				new File("EMails\\temporary.txt").createNewFile();
-				JOptionPane.showMessageDialog(this, "No files found in "+eMailsDirectory.getAbsolutePath());
+				JOptionPane.showMessageDialog(this, "No files found in "+eMailsDirectory.getAbsolutePath()+"\nCreated temporary file.");
 			}catch(Exception e){}
 		}
 		
-		eMailData = new String[eMailFiles.length][3];
+		eMailData = new String[eMailFiles.length][3];	// 0:sender 1:subject 2:date 3:message
 		eMailList = new EMail[eMailFiles.length];
 		eMailPath = new HashMap<EMail, File>();
 		
@@ -235,8 +233,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 							corrupted.append("\n");
 						}
 					}
-				}catch(Exception ex){
-				}
+				}catch(Exception ex){}
 				eMailList[i] = new EMail("[CORRUPTED]("+eMailFiles[i]+")", "[CORRUPTED]", new Date(12, 31, 9999), corrupted.toString());
 				try{read.close();}catch(Exception ee){}
 			}
@@ -259,7 +256,6 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	 * Updates the JTable
 	 */
 	private void updateList(){
-		// EMail[] eMailList -> String[][] eMailData	for showing as JTable
 		tableModel.setRowCount(0);
 		for(int i=0; i<eMailList.length; i++){
 			eMailData[i][0] = eMailList[i].getSender();
@@ -347,10 +343,6 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 				}
 			}
 		});
-		/*File tempFile = new File("EMails\\testfile.txt");
-		try{
-			tempFile.createNewFile();
-		}catch(Exception e){}*/
 	}
 }
 

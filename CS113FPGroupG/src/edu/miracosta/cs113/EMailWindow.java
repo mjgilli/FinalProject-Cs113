@@ -34,7 +34,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -43,7 +42,7 @@ import javax.swing.JCheckBoxMenuItem;
 /**
  * GUI to show the window for EMail.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.97.1
+ * @version 1.0
  *
  */
 @SuppressWarnings("serial")
@@ -68,7 +67,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private JPanel buttonPanel;
 	private JButton encrypt;
 	private JButton decrypt;
-	private JButton open;
 	private JButton save;
 	private JButton saveAs;
 
@@ -78,7 +76,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private JCheckBoxMenuItem wordWrapCheckbox;
 	private JMenuItem encryptMenu;
 	private JMenuItem decryptMenu;
-	private JMenuItem openMenu;
 	private JMenuItem saveMenu;
 	private JMenuItem saveAsMenu;
 	private JMenuItem exitMenu;
@@ -86,6 +83,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private boolean saveChanged;	// used to ask for save changes made, but disabled (save not implemented)
 	private File currentFile;
 	
+	private EncryptionTree<ModCharacter> encryptor;
 	/**
 	 * Create window
 	 */
@@ -149,19 +147,15 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		encrypt.addActionListener(this);
 		decrypt = new JButton("Decrypt");
 		decrypt.addActionListener(this);
-		open = new JButton("Open");
-		open.setVisible(false);		// disabled
 		save = new JButton("Save");
 		save.addActionListener(this);
 		save.setEnabled(false);
 		saveAs = new JButton("Save As...");
 		saveAs.addActionListener(this);
-		open.addActionListener(this);
 		buttonPanel.add(encrypt);
 		buttonPanel.add(decrypt);
 		buttonPanel.add(save);
 		buttonPanel.add(saveAs);
-		buttonPanel.add(open);
 		SpringUtilities.makeGrid(buttonPanel, 4, 1, 5, 5, 5, 5);
 		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
 		
@@ -179,11 +173,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		decryptMenu = new JMenuItem("Decrypt");
 		decryptMenu.addActionListener(this);
 		fileMenuBar.add(decryptMenu);
-		
-		openMenu = new JMenuItem("Open");
-		openMenu.setVisible(false);		// disabled
-		openMenu.addActionListener(this);
-		fileMenuBar.add(openMenu);
 		
 		saveMenu = new JMenuItem("Save");
 		saveMenu.addActionListener(this);
@@ -207,6 +196,8 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		wordWrapCheckbox.addItemListener(this);
 		viewMenuBar.add(wordWrapCheckbox);
 		
+		encryptor = new EncryptionTree<ModCharacter>();
+		
 		pack();
 		setVisible(true);
 	}
@@ -216,7 +207,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	 * @param openEMail
 	 */
 	public EMailWindow(EMail openEMail, File currentFile){
-		//TODO: get currentFile
 		EMailWindow windowWithParams = new EMailWindow();
 		windowWithParams.senderField.setText(openEMail.getSender());
 		windowWithParams.subjectField.setText(openEMail.getSubject());
@@ -254,6 +244,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		}
 		else{
 			saveAs();
+			return;
 		}
 		setTitle(currentFile.getPath());
 		JOptionPane.showMessageDialog(this, "EMail has been saved.");
@@ -267,12 +258,14 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		String rawNameInput = "";
 		while(!saveLocationConfirmed){
 			rawNameInput = JOptionPane.showInputDialog(this, "Save As...", rawNameInput);
+			
 			if(rawNameInput == null){	// Cancel
 				return;
 			}
 			else if(rawNameInput.equals("")){	// empty input
 				continue;	// I won't let you (repeat while)
 			}
+			
 			if(rawNameInput.indexOf(".txt") == -1){	// input without .txt extension
 				rawNameInput += ".txt";
 			}
@@ -295,49 +288,53 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		}
 		currentFile = new File(".\\EMails\\"+rawNameInput);
 		save();
+		saveChanged = false;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e){
-		if(e.getSource() == open || e.getSource() == openMenu){	// open button no need?
-		}
-		else if(e.getSource() == encrypt || e.getSource() == encryptMenu){
-
-			EncryptionTree<ModCharacter> tree = new EncryptionTree<ModCharacter>();
-			String rawInput = inputArea.getText();
+		if(e.getSource() == encrypt || e.getSource() == encryptMenu){
 			StringBuilder sb = new StringBuilder();
-			for(int i=0; i<rawInput.length(); i++){
-				char c = rawInput.toUpperCase().charAt(i);
-				sb.append(tree.encode(c));
-			}
-			System.out.println(sb.toString());
-			inputArea.setText(sb.toString().substring(0, sb.length()-1));
-			//System.out.println(c);
-			//String rawText = inputArea.getText();
-			//String encrypted = callEncryptMethod
-			//inputArea.setText(encrypted);
+			try{
+				for(String rawInput : inputArea.getText().split("\\n")){
+					if(!sb.toString().equals("")){
+						sb.append("\n");
+					}
+					for(int i=0; i<rawInput.length(); i++){
+						char c = rawInput.toUpperCase().charAt(i);
+						sb.append(encryptor.encode(c));
+					}
+				}
+				inputArea.setText(sb.toString().substring(0, sb.length()-1));
+			}catch(Exception ex){}
 		}
+		
 		else if(e.getSource() == decrypt || e.getSource() == decryptMenu){
-			EncryptionTree<ModCharacter> tree = new EncryptionTree<ModCharacter>();
-			String[] encoded = inputArea.getText().split(" ");
-			String decoded = "";
-			for(int i=0; i<encoded.length; i++){
-				decoded += Character.toString(tree.decode(encoded[i])).toLowerCase();
+			StringBuilder sb = new StringBuilder();
+			for(String rawInput : inputArea.getText().split("\n")){
+				String[] encoded = rawInput.split(" ");
+				String decoded = "";
+				if(!sb.toString().equals("")){
+					sb.append("\n");
+				}
+				try{
+					for(int i=0; i<encoded.length; i++){
+						decoded += Character.toString(encryptor.decode(encoded[i])).toLowerCase();
+					}
+					sb.append(decoded);
+				}catch(Exception ex){}
 			}
-			inputArea.setText(decoded);
-			//String encrypted = inputArea.getText();
-			//String decrypted = callEncryptMethod
-			//inputArea.setText(decrypted);
+			inputArea.setText(sb.toString());
 		}
+		
 		else if(e.getSource() == save || e.getSource() == saveMenu){
 			save();
-			saveChanged = false;
 			save.setEnabled(saveChanged);
 			saveMenu.setEnabled(saveChanged);
 		}
+		
 		else if(e.getSource() == saveAs || e.getSource() == saveAsMenu){
 			saveAs();
-			saveChanged = false;
 			save.setEnabled(saveChanged);
 			saveMenu.setEnabled(saveChanged);
 		}
@@ -397,7 +394,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 				break;
 			case -1:// Message window closed by X, treat as cancel
 			case 2:	//cancel
-				// or default:
 				return;
 			}
 		}
@@ -418,7 +414,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	/**
 	 * GUI tester.
 	 */
-	public static void main(String args[]){
+	/*public static void main(String args[]){
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -429,5 +425,5 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 				}
 			}
 		});
-	}
+	}*/
 }
