@@ -3,6 +3,7 @@ package edu.miracosta.cs113;
 import java.io.*;
 import java.util.Scanner;
 
+@SuppressWarnings("serial")
 public class BinaryTree<E> implements Serializable
 {
     public Node<E> root;
@@ -124,7 +125,8 @@ public class BinaryTree<E> implements Serializable
 
 
     //Inner node class
-    protected static class Node<ModCharacter>
+    @SuppressWarnings("hiding")
+	protected static class Node<ModCharacter>
     {
         protected ModCharacter data;
         protected Node<ModCharacter> left;
@@ -132,7 +134,6 @@ public class BinaryTree<E> implements Serializable
 
         public Node()
         {
-            this.data = data;
             this.left = null;
             this.right = null;
         }

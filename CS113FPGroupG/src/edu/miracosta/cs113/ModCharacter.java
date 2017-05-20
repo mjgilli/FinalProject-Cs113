@@ -12,6 +12,7 @@ package edu.miracosta.cs113;
 public class ModCharacter
 {
     private boolean upperCase = false;
+    
     private Character data;
     private String encryptionCode = "";
 

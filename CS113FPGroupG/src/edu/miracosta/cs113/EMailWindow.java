@@ -311,12 +311,20 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 				sb.append(tree.encode(c));
 			}
 			System.out.println(sb.toString());
+			inputArea.setText(sb.toString().substring(0, sb.length()-1));
 			//System.out.println(c);
 			//String rawText = inputArea.getText();
 			//String encrypted = callEncryptMethod
 			//inputArea.setText(encrypted);
 		}
 		else if(e.getSource() == decrypt || e.getSource() == decryptMenu){
+			EncryptionTree<ModCharacter> tree = new EncryptionTree<ModCharacter>();
+			String[] encoded = inputArea.getText().split(" ");
+			String decoded = "";
+			for(int i=0; i<encoded.length; i++){
+				decoded += Character.toString(tree.decode(encoded[i])).toLowerCase();
+			}
+			inputArea.setText(decoded);
 			//String encrypted = inputArea.getText();
 			//String decrypted = callEncryptMethod
 			//inputArea.setText(decrypted);

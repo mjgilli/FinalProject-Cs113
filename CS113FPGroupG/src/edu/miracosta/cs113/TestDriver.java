@@ -8,8 +8,7 @@ public class TestDriver
     public static void main(String[] args)
     {
         EncryptionTree<ModCharacter> et = new EncryptionTree<>();
-
-        System.out.println(et);
+        System.out.println(((ModCharacter)(et.root.right.right.left.left.data)).getData());
 
 
     }

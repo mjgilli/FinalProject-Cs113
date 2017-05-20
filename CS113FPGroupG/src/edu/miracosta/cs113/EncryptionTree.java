@@ -7,12 +7,14 @@ package edu.miracosta.cs113;
 import java.util.*;
 import java.io.*;
 
+@SuppressWarnings({ "serial", "rawtypes" })
 public class EncryptionTree<E> extends BinaryTree
 {
     private final String FILE = "encryptionMap.txt";
     private final String CODE = "encryptionCode.txt";
     //Constructor
-    public EncryptionTree()
+    @SuppressWarnings("unchecked")
+	public EncryptionTree()
     {
         super();
         root = new Node<ModCharacter>();
@@ -27,7 +29,8 @@ public class EncryptionTree<E> extends BinaryTree
      *
      * @param fileName file name prompted in the Driver class.
      */
-    public void readFile(String fileName)
+    @SuppressWarnings("unchecked")
+	public void readFile(String fileName)
     {
         Scanner scan = null;
         try
@@ -60,7 +63,6 @@ public class EncryptionTree<E> extends BinaryTree
      */
     public String getPath(Character c)
     {
-        StringBuilder sb = new StringBuilder();
         Scanner scan = null;
         String path = null;
         
@@ -133,7 +135,7 @@ public class EncryptionTree<E> extends BinaryTree
         //this operation wont work until the generic is changed to ModData
         if(path.length() == 0)
         {
-        	return sb.toString();
+        	return sb.toString()+" ";
             //do nothing
         }
         else
@@ -141,11 +143,11 @@ public class EncryptionTree<E> extends BinaryTree
             if (path.charAt(0) == '-')
             {
                 current = current.left;
-                sb.append(current.data.getEncryptionCode() + " ");
+                sb.append(current.data.getEncryptionCode()+"|");
             } else
             {
                 current = current.right;
-                sb.append(current.data.getEncryptionCode() + " ");
+                sb.append(current.data.getEncryptionCode()+"|");
             }
         }
         return getEncryption(path.substring(1), current, sb);
@@ -157,7 +159,8 @@ public class EncryptionTree<E> extends BinaryTree
      * @param c The character
      * @return Encrypted Representation
      */
-    public String encode(Character c)
+    @SuppressWarnings("unchecked")
+	public String encode(Character c)
     {
         String path = getPath(c);
         StringBuilder sb = new StringBuilder();
@@ -165,6 +168,34 @@ public class EncryptionTree<E> extends BinaryTree
         String encryptedChar = getEncryption(path, theNode, sb);
 
         return encryptedChar;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public Character decode(String input){
+    	ModCharacter aa = (ModCharacter) decode(root, input);
+    	return ((ModCharacter)(aa)).getData();
+    }
+    
+    private ModCharacter decode(Node<ModCharacter> node, String str){
+
+    	String nextWord = "";
+    	if(str.length() != 0){
+    		nextWord = str.substring(0, str.indexOf("|"));
+    	}
+    	
+    	if(str.length() == 0 || str == null){
+    		return node.data;
+    	}
+    	System.out.println(nextWord);
+    	if(node.left.data.getEncryptionCode().equals(nextWord)){
+    		node = node.left;
+    		System.out.println("Passed left");
+    	}
+    	else if(node.right.data.getEncryptionCode().equals(nextWord)){
+    		node = node.right;
+    		System.out.println("Passed right");
+    	}
+    	return decode(node, str.substring(str.indexOf("|")+1));
     }
 
     /**
@@ -205,7 +236,8 @@ public class EncryptionTree<E> extends BinaryTree
     }
 
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public String toString()
     {
         StringBuilder letter = new StringBuilder();
