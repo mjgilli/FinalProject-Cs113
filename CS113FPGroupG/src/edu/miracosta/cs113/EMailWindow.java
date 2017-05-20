@@ -43,10 +43,10 @@ import javax.swing.JCheckBoxMenuItem;
 /**
  * GUI to show the window for EMail.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.97
+ * @version 0.97.1
  *
  */
-@SuppressWarnings({ "serial", "unused" })
+@SuppressWarnings("serial")
 public class EMailWindow extends JFrame implements ActionListener, ItemListener, DocumentListener, WindowListener{
 	
 	private JPanel mainPanel;
