@@ -85,6 +85,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
+		setTitle("CS113 Group G FP EMail Client");
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

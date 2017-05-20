@@ -1,3 +1,4 @@
+package edu.miracosta.cs113;
 /**
  * Encryption Binary Tree
  */
@@ -62,6 +63,7 @@ public class EncryptionTree<E> extends BinaryTree
         StringBuilder sb = new StringBuilder();
         Scanner scan = null;
         String path = null;
+        
 
         try
         {
@@ -70,7 +72,7 @@ public class EncryptionTree<E> extends BinaryTree
             while (scan.hasNextLine())
             {
                 String data = scan.nextLine();
-                if(data.toLowerCase().charAt(0) == c)
+                if(data.toUpperCase().charAt(0) == c.charValue())
                 {
                     path = data.substring(1);
                 }
@@ -131,6 +133,7 @@ public class EncryptionTree<E> extends BinaryTree
         //this operation wont work until the generic is changed to ModData
         if(path.length() == 0)
         {
+        	return sb.toString();
             //do nothing
         }
         else
@@ -138,9 +141,11 @@ public class EncryptionTree<E> extends BinaryTree
             if (path.charAt(0) == '-')
             {
                 current = current.left;
+                sb.append(current.data.getEncryptionCode() + " ");
             } else
             {
                 current = current.right;
+                sb.append(current.data.getEncryptionCode() + " ");
             }
         }
         return getEncryption(path.substring(1), current, sb);
@@ -157,7 +162,6 @@ public class EncryptionTree<E> extends BinaryTree
         String path = getPath(c);
         StringBuilder sb = new StringBuilder();
         Node<ModCharacter> theNode = root;
-
         String encryptedChar = getEncryption(path, theNode, sb);
 
         return encryptedChar;

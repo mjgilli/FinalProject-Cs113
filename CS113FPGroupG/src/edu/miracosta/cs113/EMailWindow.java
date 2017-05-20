@@ -146,7 +146,9 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		// ButtonPanel setup
 		buttonPanel = new JPanel(new SpringLayout());
 		encrypt = new JButton("Encrypt");
+		encrypt.addActionListener(this);
 		decrypt = new JButton("Decrypt");
+		decrypt.addActionListener(this);
 		open = new JButton("Open");
 		open.setVisible(false);		// disabled
 		save = new JButton("Save");
@@ -300,6 +302,16 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		if(e.getSource() == open || e.getSource() == openMenu){	// open button no need?
 		}
 		else if(e.getSource() == encrypt || e.getSource() == encryptMenu){
+
+			EncryptionTree<ModCharacter> tree = new EncryptionTree<ModCharacter>();
+			String rawInput = inputArea.getText();
+			StringBuilder sb = new StringBuilder();
+			for(int i=0; i<rawInput.length(); i++){
+				char c = rawInput.toUpperCase().charAt(i);
+				sb.append(tree.encode(c));
+			}
+			System.out.println(sb.toString());
+			//System.out.println(c);
 			//String rawText = inputArea.getText();
 			//String encrypted = callEncryptMethod
 			//inputArea.setText(encrypted);

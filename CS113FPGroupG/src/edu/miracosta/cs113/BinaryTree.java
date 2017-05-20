@@ -1,3 +1,5 @@
+package edu.miracosta.cs113;
+
 import java.io.*;
 import java.util.Scanner;
 
