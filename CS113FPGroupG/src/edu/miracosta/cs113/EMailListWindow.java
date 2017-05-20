@@ -2,6 +2,7 @@ package edu.miracosta.cs113;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,9 +14,11 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,7 +40,7 @@ import javax.swing.JMenu;
 /**
  * GUI to show the list of the EMails.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.98
+ * @version 0.99
  *
  */
 @SuppressWarnings("serial")
@@ -46,6 +49,9 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	private JMenuItem reloadMenu;
 	private JMenuItem exitMenu;
 	private JMenuItem resetSortMenu;
+	
+	private JPanel topPanel;
+	private JButton newButton;
 	
 	private JPanel sortPanel;
 	private JPanel sortButtonPanel;
@@ -63,11 +69,13 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 	private JTable eMailTable;
 	private JScrollPane scrollTable;
 	
-	private String eMailFiles[];
-	private String eMailData[][];
-	private EMail eMailList[];
+	private String eMailFiles[];	// list of files in .\EMails
+	private EMail eMailList[];		// list of EMails
+	private String eMailData[][];	// data of EMails, used for JTable
+	private HashMap<EMail, File> eMailPath;	// path for EMails
 	
 	private static final File eMailsDirectory = new File(".\\EMails");
+	private JMenuItem newButtonMenu;
 
 	/**
 	 * Create window.
@@ -86,22 +94,31 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		
 		JMenu viewMenu = new JMenu("View");
 		menuBar.add(viewMenu);
-		
-		ExitAction ea = new ExitAction();
-		ea.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control x"));
-		exitMenu = new JMenuItem(ea);
+
+		newButtonMenu = new JMenuItem("New");
+		newButtonMenu.addActionListener(this);
+		fileMenu.add(newButtonMenu);
 		
 		reloadMenu = new JMenuItem("Reload");
 		reloadMenu.addActionListener(this);
 		fileMenu.add(reloadMenu);
 		
+		ExitAction ea = new ExitAction();
+		ea.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control x"));
+		exitMenu = new JMenuItem(ea);
+		fileMenu.add(exitMenu);
+		
 		resetSortMenu = new JMenuItem("Reset sort");
 		resetSortMenu.addActionListener(this);
-		fileMenu.add(exitMenu);
-
 		viewMenu.add(resetSortMenu);
 		
-		sortPanel = new JPanel();
+		topPanel = new JPanel();
+		newButton = new JButton("New");
+		newButton.addActionListener(this);
+		newButton.setVisible(false);
+		topPanel.add(newButton);
+		
+		sortPanel = new JPanel(new FlowLayout());
 		sortLabel = new JLabel("Sort by:");
 		sortPanel.add(sortLabel);
 		sortButtonPanel = new JPanel(new GridLayout(2, 3));
@@ -131,8 +148,8 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		sortButtonPanel.add(subjectSortR);
 		sortButtonPanel.add(dateSortR);
 		sortPanel.add(sortButtonPanel);
-		getContentPane().add(sortPanel, BorderLayout.NORTH);
-		
+		topPanel.add(sortPanel);
+		getContentPane().add(topPanel, BorderLayout.NORTH);
 		
 		listPanel = new JPanel();
 		listPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -169,6 +186,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		
 		eMailData = new String[eMailFiles.length][3];
 		eMailList = new EMail[eMailFiles.length];
+		eMailPath = new HashMap<EMail, File>();
 		
 		for(int i=0; i<eMailFiles.length; i++){
 			// try .txt -> EMail[] eMailList
@@ -216,10 +234,13 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 							corrupted.append("\n");
 						}
 					}
-				}catch(Exception ee){
+				}catch(Exception ex){
 				}
-				eMailList[i] = new EMail("[CORRUPTED]("+eMailFiles[i]+")", "[CORRUPTED]", new Date(1, 1, 9999), corrupted.toString());
-				try{read.close();}catch(Exception ex){}
+				eMailList[i] = new EMail("[CORRUPTED]("+eMailFiles[i]+")", "[CORRUPTED]", new Date(12, 31, 9999), corrupted.toString());
+				try{read.close();}catch(Exception ee){}
+			}
+			finally{
+				eMailPath.put(eMailList[i], new File(eMailsDirectory+"\\"+eMailFiles[i]));
 			}
 		}
 		updateList();
@@ -260,7 +281,7 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 		if(e.getClickCount() == 2){
 			EMail selected = eMailList[eMailTable.getSelectedRow()];
 			@SuppressWarnings("unused")
-			EMailWindow open = new EMailWindow(selected);
+			EMailWindow open = new EMailWindow(selected, eMailPath.get(selected));
 		}
 	}
 
@@ -303,6 +324,11 @@ public class EMailListWindow extends JFrame implements ActionListener, MouseList
 			tableModel.setRowCount(0);
 			EMail.mergeSort(eMailList, 'D');
 			updateList();
+		}
+		
+		else if(e.getSource() == newButton || e.getSource() == newButtonMenu){
+			@SuppressWarnings("unused")
+			EMailWindow newWindow = new EMailWindow();
 		}
 	}
 

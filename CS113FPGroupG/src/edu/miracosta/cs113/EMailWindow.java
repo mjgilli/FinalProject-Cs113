@@ -28,6 +28,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
@@ -38,7 +43,7 @@ import javax.swing.JCheckBoxMenuItem;
 /**
  * GUI to show the window for EMail.
  * @author Ryo Kanda <rensakou.touhou@gmail.com>
- * @version 0.91
+ * @version 0.97
  *
  */
 @SuppressWarnings({ "serial", "unused" })
@@ -65,6 +70,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private JButton decrypt;
 	private JButton open;
 	private JButton save;
+	private JButton saveAs;
 
 	private JMenuBar menuBar;
 	private JMenu fileMenuBar;
@@ -74,21 +80,25 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	private JMenuItem decryptMenu;
 	private JMenuItem openMenu;
 	private JMenuItem saveMenu;
+	private JMenuItem saveAsMenu;
 	private JMenuItem exitMenu;
 	
 	private boolean saveChanged;	// used to ask for save changes made, but disabled (save not implemented)
+	private File currentFile;
 	
 	/**
 	 * Create window
 	 */
 	public EMailWindow(){
 		saveChanged = false;
+		currentFile = null;
 		// Default window setup
 		setPreferredSize(new Dimension(500, 400));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(this);
 		setBounds(150, 150, 450, 300);
 		setMinimumSize(new Dimension(200,270));
+		setTitle("New EMail");
 		
 		mainPanel = new JPanel(new BorderLayout());
 		getContentPane().add(mainPanel);
@@ -99,7 +109,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		infoPanel.add(senderLabel, BorderLayout.WEST);
 
 		senderField = new JTextField();
-		senderField.setEditable(false);
 		senderField.getDocument().addDocumentListener(this);
 		infoPanel.add(senderField, BorderLayout.CENTER);
 		
@@ -107,15 +116,15 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		infoPanel.add(subjectLabel, BorderLayout.WEST);
 
 		subjectField = new JTextField();
-		subjectField.setEditable(false);
 		subjectField.getDocument().addDocumentListener(this);
 		infoPanel.add(subjectField, BorderLayout.CENTER);
 		
 		dateLabel = new JLabel("Date:", SwingConstants.RIGHT);
 		infoPanel.add(dateLabel, BorderLayout.WEST);
 		
-		dateField = new JTextField();
-		dateField.setEditable(false);
+		SimpleDateFormat initial = new SimpleDateFormat("MMMM d, yyyy");
+		java.util.Date current = new java.util.Date();
+		dateField = new JTextField(initial.format(current));
 		dateField.getDocument().addDocumentListener(this);
 		infoPanel.add(dateField, BorderLayout.CENTER);
 
@@ -126,7 +135,6 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		// DescriptionPanel setup
 		descriptionPanel = new JPanel(new BorderLayout());
 		inputArea = new JTextArea();
-		inputArea.setEditable(false);
 		inputScroll = new JScrollPane(inputArea);
 		inputArea.setLineWrap(true);
 		EtchedBorder border = new EtchedBorder(EtchedBorder.RAISED);
@@ -142,12 +150,16 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		open = new JButton("Open");
 		open.setVisible(false);		// disabled
 		save = new JButton("Save");
-		save.setVisible(false);		// disabled
+		save.addActionListener(this);
+		save.setEnabled(false);
+		saveAs = new JButton("Save As...");
+		saveAs.addActionListener(this);
 		open.addActionListener(this);
 		buttonPanel.add(encrypt);
 		buttonPanel.add(decrypt);
-		buttonPanel.add(open);
 		buttonPanel.add(save);
+		buttonPanel.add(saveAs);
+		buttonPanel.add(open);
 		SpringUtilities.makeGrid(buttonPanel, 4, 1, 5, 5, 5, 5);
 		descriptionPanel.add(buttonPanel, BorderLayout.EAST);
 		
@@ -172,9 +184,13 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 		fileMenuBar.add(openMenu);
 		
 		saveMenu = new JMenuItem("Save");
-		saveMenu.setVisible(false);		// disabled
 		saveMenu.addActionListener(this);
+		saveMenu.setEnabled(false);
 		fileMenuBar.add(saveMenu);
+
+		saveAsMenu = new JMenuItem("Save As...");
+		saveAsMenu.addActionListener(this);
+		fileMenuBar.add(saveAsMenu);
 		
 		ExitAction ea = new ExitAction();
 		ea.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control x"));
@@ -197,13 +213,86 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 	 * Creates window with given EMail object.
 	 * @param openEMail
 	 */
-	public EMailWindow(EMail openEMail){
+	public EMailWindow(EMail openEMail, File currentFile){
+		//TODO: get currentFile
 		EMailWindow windowWithParams = new EMailWindow();
 		windowWithParams.senderField.setText(openEMail.getSender());
 		windowWithParams.subjectField.setText(openEMail.getSubject());
 		windowWithParams.dateField.setText(openEMail.getDate().toString());
 		windowWithParams.inputArea.setText(openEMail.getMsg());
-		saveChanged = false;
+		windowWithParams.currentFile = currentFile;
+		windowWithParams.saveChanged = false;
+		windowWithParams.save.setEnabled(false);
+		windowWithParams.saveMenu.setEnabled(false);
+		windowWithParams.setTitle(currentFile.getPath());
+	}
+	
+	/**
+	 * Saves EMail to file. If not saved yet, calls saveAs().
+	 */
+	public void save(){
+		if(currentFile != null){
+			try{
+				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(currentFile)));
+				writer.println(senderField.getText());
+				writer.println(subjectField.getText());
+				writer.println(dateField.getText());
+				String[] rawInputArea = inputArea.getText().split("\n");
+				for(int i=0; i<rawInputArea.length; i++){
+					writer.print(rawInputArea[i]);
+					if(i != rawInputArea.length-1){
+						writer.println();
+					}
+				}
+				writer.close();
+			}catch(Exception e){
+				JOptionPane.showMessageDialog(this, "Could not save to \""+currentFile.getAbsolutePath()+"\"");
+				e.printStackTrace();
+			}
+		}
+		else{
+			saveAs();
+		}
+		setTitle(currentFile.getPath());
+		JOptionPane.showMessageDialog(this, "EMail has been saved.");
+	}
+	
+	/**
+	 * Saves EMail to file with different name. Called by save() if not saved yet. Checks equality of last saved file, and checks already existing file.
+	 */
+	public void saveAs(){
+		boolean saveLocationConfirmed = false;
+		String rawNameInput = "";
+		while(!saveLocationConfirmed){
+			rawNameInput = JOptionPane.showInputDialog(this, "Save As...", rawNameInput);
+			if(rawNameInput == null){	// Cancel
+				return;
+			}
+			else if(rawNameInput.equals("")){	// empty input
+				continue;	// I won't let you (repeat while)
+			}
+			if(rawNameInput.indexOf(".txt") == -1){	// input without .txt extension
+				rawNameInput += ".txt";
+			}
+			
+			if(currentFile != null && currentFile.getAbsolutePath().equals(new File(".\\EMails").getAbsolutePath()+"\\"+rawNameInput)){	// same as current editing file
+				saveLocationConfirmed = true;
+			}
+			else{	// saving to different file
+				File checkExistence = new File(".\\EMails\\"+rawNameInput);
+				if(checkExistence.exists()){	// if file already exists
+					int selection = JOptionPane.showConfirmDialog(this, rawNameInput+" already exists. Save it?", null, JOptionPane.YES_NO_OPTION);
+					if(selection == 0){
+						saveLocationConfirmed = true;
+					}
+				}
+				else{	// completely new file
+					saveLocationConfirmed = true;
+				}
+			}
+		}
+		currentFile = new File(".\\EMails\\"+rawNameInput);
+		save();
 	}
 	
 	@Override
@@ -220,23 +309,47 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 			//String decrypted = callEncryptMethod
 			//inputArea.setText(decrypted);
 		}
-		else if(e.getSource() == save || e.getSource() == saveMenu){	// save button no need?
+		else if(e.getSource() == save || e.getSource() == saveMenu){
+			save();
 			saveChanged = false;
+			save.setEnabled(saveChanged);
+			saveMenu.setEnabled(saveChanged);
+		}
+		else if(e.getSource() == saveAs || e.getSource() == saveAsMenu){
+			saveAs();
+			saveChanged = false;
+			save.setEnabled(saveChanged);
+			saveMenu.setEnabled(saveChanged);
 		}
 	}
 
 	@Override
 	public void changedUpdate(DocumentEvent e) {
+		if(!saveChanged){
+			setTitle("*"+getTitle());
+			save.setEnabled(true);
+			saveMenu.setEnabled(true);
+		}
 		saveChanged = true;
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
+		if(!saveChanged){
+			setTitle("*"+getTitle());
+			save.setEnabled(true);
+			saveMenu.setEnabled(true);
+		}
 		saveChanged = true;
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
+		if(!saveChanged){
+			setTitle("*"+getTitle());
+			save.setEnabled(true);
+			saveMenu.setEnabled(true);
+		}
 		saveChanged = true;
 	}
 
@@ -252,23 +365,22 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		/* implemented, but will not be used
 		if(saveChanged){
 			int result = JOptionPane.showConfirmDialog(this, "Do you want to save changes?", null, JOptionPane.YES_NO_CANCEL_OPTION);
 			switch(result){
-			case -1:	// Message window closed by X, treat as cancel
-				return;
 			case 0:	//yes
-				saveChanged = true;
+				save();
+				saveChanged = false;
 				break;
 			case 1:	//no
 				super.dispose();
 				break;
+			case -1:// Message window closed by X, treat as cancel
 			case 2:	//cancel
+				// or default:
 				return;
 			}
 		}
-		*/
 		super.dispose();
 		
 	}
