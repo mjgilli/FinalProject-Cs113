@@ -170,12 +170,24 @@ public class EncryptionTree<E> extends BinaryTree
         return encryptedChar;
     }
     
+    /**
+     * Returns the Decrypted version of character
+     * @param input encryption to be decoded
+     * @return decrypted representation
+     */
     @SuppressWarnings("unchecked")
 	public Character decode(String input){
     	ModCharacter aa = (ModCharacter) decode(root, input);
     	return ((ModCharacter)(aa)).getData();
     }
     
+    /**
+     * Helper Method: Recursively traverse the tree based on given strings
+     * and substrings until finds end letter and decrypts
+     * @param node node to find and decrypt
+     * @param str encoded representation of letter
+     * @return decoded letter
+     */
     private ModCharacter decode(Node<ModCharacter> node, String str){
 
     	String nextWord = "";
