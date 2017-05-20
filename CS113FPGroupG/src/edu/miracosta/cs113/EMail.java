@@ -127,12 +127,12 @@ public class EMail implements Comparable<EMail>{
 	
 	/**
      * Returns boolean is "this" EMail is equal to parameter
-	 * PRECONDITION:	Instance variables have valid values for both Date objects
+	 * PRECONDITION:	Instance variables have valid values for both EMail objects
      * POSTCONDITION:	Returns true if both are exactly the same, false otherwise.
      * @param other EMail object to compare
      * @return boolean representing if equal
      */
-    public boolean equals(EMail other)
+    public boolean equals(Object other)
     {
     	EMail otherEMail;
 

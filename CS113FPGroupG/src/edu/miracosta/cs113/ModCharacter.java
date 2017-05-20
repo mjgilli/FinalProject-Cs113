@@ -16,7 +16,14 @@ public class ModCharacter
     private Character data;
     private String encryptionCode = "";
 
-    //constructor
+    /**
+     * Full Constructor for ModCharacter class
+	 * Sets all instance variable to given values
+	 * PRECONDITION: All arguments passed through must have valid values
+	 * POSTCONDITION: Creates instance of EMail class with given values
+     * @param c
+     * @param encryptionCode
+     */
     public ModCharacter(char c, String encryptionCode)
     {
         data = c;
@@ -28,6 +35,12 @@ public class ModCharacter
         }
     }
 
+    /**
+     * Returns if character or upper case
+     * PRECONDITION:  N/A
+	 * POSTCONDITION: true, if upper, false otherwise
+     * @return boolean true, if upper, false otherwise
+     */
     public boolean isUpperCase()
     {
         return upperCase;
@@ -35,10 +48,9 @@ public class ModCharacter
 
     /**
      * Returns the char object of the data
-     *
+     * PRECONDITION: All instance variables(subject) have valid values
      * @return The data
      */
-
     public Character getData()
     {
         return data;
@@ -47,13 +59,21 @@ public class ModCharacter
     /**
      * Returns the representation of this char
      * in encrypted character
-     * @return
+     * PRECONDITION: All instance variables(subject) have valid values
+     * @return encrypted string representation of character
      */
     public String getEncryptionCode()
     {
         return encryptionCode;
     }
 
+    /**
+     * Returns boolean is "this" ModCharacter is equal to parameter
+	 * PRECONDITION:	Instance variables have valid values for both ModCharacter objects
+     * POSTCONDITION:	Returns true if both are exactly the same, false otherwise.
+     * @param other Object to compare
+     * @return boolean representing if equal
+     */
     @Override
     public boolean equals(Object o)
     {
@@ -72,6 +92,12 @@ public class ModCharacter
         return (char) this.data == (char) other.getData();
     }
 
+
+	/**
+	 * Converts object to String representation
+	 * PRECONDITON:  All instance variables have valid values
+	 * POSTCONDITON: Returns String containing all instance variables
+	 */
     @Override
     public String toString()
     {

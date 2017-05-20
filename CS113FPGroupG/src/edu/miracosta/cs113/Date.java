@@ -252,7 +252,7 @@ public class Date implements Comparable<Date>
      * @param other Date object to compare
      * @return boolean representing if equal
      */
-    public boolean equals(Date other)
+    public boolean equals(Object other)
     {
     	Date otherDate;
 
