@@ -7,13 +7,13 @@ package edu.miracosta.cs113;
 import java.util.*;
 import java.io.*;
 
-@SuppressWarnings({ "serial", "rawtypes" })
-public class EncryptionTree<E> extends BinaryTree
+@SuppressWarnings({ "serial" })
+public class EncryptionTree<E> extends BinaryTree<ModCharacter>
 {
     private final String FILE = "encryptionMap.txt";
     private final String CODE = "encryptionCode.txt";
     //Constructor
-    @SuppressWarnings("unchecked")
+
 	public EncryptionTree()
     {
         super();
@@ -29,7 +29,7 @@ public class EncryptionTree<E> extends BinaryTree
      *
      * @param fileName file name prompted in the Driver class.
      */
-    @SuppressWarnings("unchecked")
+
 	public void readFile(String fileName)
     {
         Scanner scan = null;
@@ -159,7 +159,6 @@ public class EncryptionTree<E> extends BinaryTree
      * @param c The character
      * @return Encrypted Representation
      */
-    @SuppressWarnings("unchecked")
 	public String encode(Character c)
     {
         String path = getPath(c);
@@ -175,7 +174,6 @@ public class EncryptionTree<E> extends BinaryTree
      * @param input encryption to be decoded
      * @return decrypted representation
      */
-    @SuppressWarnings("unchecked")
 	public Character decode(String input){
     	ModCharacter aa = (ModCharacter) decode(root, input);
     	return ((ModCharacter)(aa)).getData();
@@ -197,15 +195,12 @@ public class EncryptionTree<E> extends BinaryTree
     	
     	if(str.length() == 0 || str == null){
     		return node.data;
-    	}
-    	System.out.println(nextWord);
+    	}    	
     	if(node.left.data.getEncryptionCode().equals(nextWord)){
     		node = node.left;
-    		System.out.println("Passed left");
     	}
     	else if(node.right.data.getEncryptionCode().equals(nextWord)){
     		node = node.right;
-    		System.out.println("Passed right");
     	}
     	return decode(node, str.substring(str.indexOf("|")+1));
     }
@@ -246,9 +241,6 @@ public class EncryptionTree<E> extends BinaryTree
             }
         }
     }
-
-
-    @SuppressWarnings("unchecked")
 	@Override
     public String toString()
     {

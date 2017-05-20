@@ -8,6 +8,12 @@ public class Date implements Comparable<Date>
     private int day;
     private int year; //a four digit number.
 
+    /**
+     * Default Constructor for Date class
+	 * Sets all instance variables to default values
+	 * PRECONDITION:  N/A
+	 * POSTCONDITION: Creates instance of Date class
+     */
     public Date( )
     {
         month = "January";
@@ -15,11 +21,23 @@ public class Date implements Comparable<Date>
         year = 1000;
     }
 
+    /**
+     * Full Constructor for Date Class
+     * @param monthInt int representing month
+     * @param day int representing day
+     * @param year int representing year
+     */
     public Date(int monthInt, int day, int year)
     {
         setDate(monthInt, day, year);
     }
 
+    /**
+     * Full Constructor for Date Class
+     * @param monthInt int representing month
+     * @param day int representing day
+     * @param year int representing year
+     */
     public Date(String monthString, int day, int year)
     {
         setDate(monthString, day, year);
