@@ -1,4 +1,3 @@
-package edu.miracosta.cs113;
 /**
  * This class is used as the representation
  * of a char object with added instance variables
@@ -12,17 +11,23 @@ public class ModCharacter
 {
     private boolean upperCase = false;
     private Character data;
-    private Character encrypt;
+    private String encryptionCode = "";
 
     //constructor
-    public ModCharacter(char c)
+    public ModCharacter(char c, String encryptionCode)
     {
         data = c;
+        this.encryptionCode = encryptionCode;
 
         if(Character.isUpperCase(data));
         {
             upperCase = true;
         }
+    }
+
+    public boolean isUpperCase()
+    {
+        return upperCase;
     }
 
     /**
@@ -41,9 +46,9 @@ public class ModCharacter
      * in encrypted character
      * @return
      */
-    public char getEncrypt()
+    public String getEncryptionCode()
     {
-        return encrypt;
+        return encryptionCode;
     }
 
     @Override
@@ -67,7 +72,7 @@ public class ModCharacter
     @Override
     public String toString()
     {
-        return data.toString();
+        return data.toString() + " " + encryptionCode;
     }
 
 }

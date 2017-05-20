@@ -1,19 +1,21 @@
 /**
  * Encryption Binary Tree
  */
-package edu.miracosta.cs113;
+
+
 import java.util.*;
 import java.io.*;
 
 public class EncryptionTree<E> extends BinaryTree
 {
     private final String FILE = "encryptionMap.txt";
+    private final String CODE = "encryptionCode.txt";
     //Constructor
     public EncryptionTree()
     {
         super();
-        root = new Node<Character>(null);
-        readFile("morsecode.txt");
+        root = new Node<ModCharacter>();
+        readFile(FILE);
     }
 
     /**
@@ -30,11 +32,12 @@ public class EncryptionTree<E> extends BinaryTree
         try
         {
             scan = new Scanner(new File(fileName));
-            while(scan.hasNext())
+            while(scan.hasNextLine())
             {
-                Character letter = scan.next().charAt(0);
-                String code = scan.next();
-                build(letter, code, this.root);
+                String data = scan.nextLine();
+                Character letter = data.charAt(0);
+                String path = data.substring(1);
+                build(letter, path, this.root);
             }
         }
         catch(FileNotFoundException e)
@@ -82,6 +85,39 @@ public class EncryptionTree<E> extends BinaryTree
     }
 
     /**
+     * Returns the encryption code of the character
+     *
+     * @param c The character
+     * @return
+     */
+    private String getCode(Character c)
+    {
+        Scanner scan = null;
+        String encryptionCode = "";
+
+        try
+        {
+            scan = new Scanner(new File(CODE));
+
+            while(scan.hasNextLine())
+            {
+                String data = scan.nextLine();
+
+                if( c == data.charAt(0))
+                {
+                    encryptionCode = data.substring(1);
+                }
+            }
+        }
+        catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+        return encryptionCode;
+    }
+
+    /**
      * Helper method: Recursively traverse the tree based on given path
      * and collects encrypted representation of node
      *
@@ -90,10 +126,9 @@ public class EncryptionTree<E> extends BinaryTree
      * @param sb StringBuilder object used to collect the encryption code
      * @return The encryption representation
      */
-    private String getEncryption(String path,Node<ModCharacter> current, StringBuilder sb)
+    private String getEncryption(String path, Node<ModCharacter> current, StringBuilder sb)
     {
         //this operation wont work until the generic is changed to ModData
-        sb.append(current.data.getEncrypt());
         if(path.length() == 0)
         {
             //do nothing
@@ -111,12 +146,19 @@ public class EncryptionTree<E> extends BinaryTree
         return getEncryption(path.substring(1), current, sb);
     }
 
+    /**
+     * Returns the encrypted version of the character
+     *
+     * @param c The character
+     * @return Encrypted Representation
+     */
     public String encode(Character c)
     {
         String path = getPath(c);
         StringBuilder sb = new StringBuilder();
+        Node<ModCharacter> theNode = root;
 
-        String encryptedChar = getEncryption(path, root, sb);
+        String encryptedChar = getEncryption(path, theNode, sb);
 
         return encryptedChar;
     }
@@ -130,12 +172,12 @@ public class EncryptionTree<E> extends BinaryTree
      * @param code Argument morse code
      * @param current Current node in the recursion(Start from root)
      */
-    private void build(Character c, String code, Node<Character> current)
+    private void build(Character c, String code, Node<ModCharacter> current)
     {
         //Terminating case. Executed once no more morse character used to traverse in the code
         if(code.isEmpty())
         {
-            current.data = c;
+            current.data = new ModCharacter(c, getCode(c));
         }
         else
         {
@@ -178,7 +220,7 @@ public class EncryptionTree<E> extends BinaryTree
      * @param letter String builder for Alphabet char and its morse code.
      * @param code Used to keep track of the morse code
      */
-    private void traverse(Node<E> node,  StringBuilder letter, StringBuilder code)
+    private void traverse(Node<ModCharacter> node, StringBuilder letter, StringBuilder code)
     {
         if (node == null)
         {
@@ -186,9 +228,9 @@ public class EncryptionTree<E> extends BinaryTree
         }
         else {
             letter.append(node.toString() + "\t" + code.toString() + "\n");
-            traverse(node.left, letter, code.append('*'));
+            traverse(node.left, letter, code.append(node.data.getEncryptionCode()));
             code.deleteCharAt(code.length() - 1);
-            traverse(node.right, letter, code.append('-'));
+            traverse(node.right, letter, code.append(node.data.getEncryptionCode()));
             code.deleteCharAt(code.length() - 1);
         }
     }
