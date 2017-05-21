@@ -161,11 +161,19 @@ public class EncryptionTree<E> extends BinaryTree<ModCharacter>
      */
 	public String encode(Character c)
     {
+		boolean lowerCase = false;
+		if(c >= 'a' && c <= 'z'){
+			c = Character.toUpperCase(c);
+			lowerCase = true;
+		}
         String path = getPath(c);
         StringBuilder sb = new StringBuilder();
         Node<ModCharacter> theNode = root;
         String encryptedChar = getEncryption(path, theNode, sb);
-
+        if(lowerCase){
+        	encryptedChar = encryptedChar.substring(0, encryptedChar.length()-1)+"byte| ";
+        }
+        
         return encryptedChar;
     }
     
@@ -175,8 +183,18 @@ public class EncryptionTree<E> extends BinaryTree<ModCharacter>
      * @return decrypted representation
      */
 	public Character decode(String input){
-    	ModCharacter aa = (ModCharacter) decode(root, input);
-    	return ((ModCharacter)(aa)).getData();
+		boolean lowerCase = false;
+		if(input.indexOf("byte")  != -1){
+			lowerCase = true;
+			input = input.substring(0, input.indexOf("byte"));
+		}
+    	ModCharacter decoded = (ModCharacter) decode(root, input);
+    	if(lowerCase){
+    		return Character.toLowerCase(((ModCharacter)(decoded)).getData());
+    	}
+    	else{
+    		return ((ModCharacter)(decoded)).getData();
+    	}
     }
     
     /**
@@ -189,6 +207,7 @@ public class EncryptionTree<E> extends BinaryTree<ModCharacter>
     private ModCharacter decode(Node<ModCharacter> node, String str){
 
     	String nextWord = "";
+    	String followingWord = "";
     	if(str.length() != 0){
     		nextWord = str.substring(0, str.indexOf("|"));
     	}

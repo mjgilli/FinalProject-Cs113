@@ -301,7 +301,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 						sb.append("\n");
 					}
 					for(int i=0; i<rawInput.length(); i++){
-						char c = rawInput.toUpperCase().charAt(i);
+						char c = rawInput.charAt(i);
 						sb.append(encryptor.encode(c));
 					}
 				}
@@ -319,7 +319,7 @@ public class EMailWindow extends JFrame implements ActionListener, ItemListener,
 				}
 				try{
 					for(int i=0; i<encoded.length; i++){
-						decoded += Character.toString(encryptor.decode(encoded[i])).toLowerCase();
+						decoded += Character.toString(encryptor.decode(encoded[i]));
 					}
 					sb.append(decoded);
 				}catch(Exception ex){}
