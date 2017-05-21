@@ -207,7 +207,6 @@ public class EncryptionTree<E> extends BinaryTree<ModCharacter>
     private ModCharacter decode(Node<ModCharacter> node, String str){
 
     	String nextWord = "";
-    	String followingWord = "";
     	if(str.length() != 0){
     		nextWord = str.substring(0, str.indexOf("|"));
     	}
